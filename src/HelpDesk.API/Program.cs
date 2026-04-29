@@ -1,7 +1,8 @@
+using HelpDesk.API.Middleware;
+using HelpDesk.Application.Services;
+using HelpDesk.Domain.Repositories;
 using HelpDesk.Infrastructure.Data;
 using HelpDesk.Infrastructure.Repositories;
-using HelpDesk.Domain.Repositories;
-using HelpDesk.API.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         .GetConnectionString("Default")));
 
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<TicketService>();
 
 var app = builder.Build();
 
