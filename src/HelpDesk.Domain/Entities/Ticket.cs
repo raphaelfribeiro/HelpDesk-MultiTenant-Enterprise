@@ -14,10 +14,7 @@ public class Ticket
 
     protected Ticket() { }
 
-    public Ticket(
-        string title,
-        string description,
-        Guid tenantId)
+    public Ticket(string title, string description, Guid tenantId)
     {
         Id = Guid.NewGuid();
         Title = title;
