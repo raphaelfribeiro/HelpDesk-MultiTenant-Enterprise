@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HelpDesk.Application.DTOs;
 using HelpDesk.Application.Services;
-using HelpDesk.Application.DTOs;
+using HelpDesk.Infrastructure.Queries;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.API.Controllers;
 
@@ -28,8 +29,14 @@ public class TicketsController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var tickets = await _service.GetAllAsync();
-
         return Ok(tickets);
+    }
+
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> GetDashboard([FromServices] TicketQuery query)
+    {
+        var result = await query.GetDashboardAsync();
+        return Ok(result);
     }
 
     private Guid GetTenantId()
