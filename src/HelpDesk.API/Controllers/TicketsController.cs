@@ -1,6 +1,7 @@
 ﻿using HelpDesk.Application.DTOs;
 using HelpDesk.Application.Services;
 using HelpDesk.Infrastructure.Queries;
+using HelpDesk.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.API.Controllers;
@@ -36,6 +37,16 @@ public class TicketsController : ControllerBase
     public async Task<IActionResult> GetDashboard([FromServices] TicketQuery query)
     {
         var result = await query.GetDashboardAsync();
+        return Ok(result);
+    }
+
+    [HttpGet("tenant")]
+    public async Task<IActionResult> GetByTenant([FromServices] TicketAdoRepository repo)
+    {
+        var tenantId = GetTenantId();
+
+        var result = await repo.GetByTenantAsync(tenantId);
+
         return Ok(result);
     }
 

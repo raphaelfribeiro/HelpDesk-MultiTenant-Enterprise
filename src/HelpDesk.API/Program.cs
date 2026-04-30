@@ -18,7 +18,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         .GetConnectionString("Default")));
 
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+
 builder.Services.AddScoped<TicketService>();
+
 builder.Services.AddScoped<TicketQuery>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
@@ -28,8 +30,16 @@ builder.Services.AddScoped<TicketQuery>(sp =>
     return new TicketQuery(connectionString);
 });
 
+builder.Services.AddScoped<TicketAdoRepository>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    return new TicketAdoRepository(
+        config.GetConnectionString("Default"));
+});
+
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     var tenantSecurityScheme = new OpenApiSecurityScheme
