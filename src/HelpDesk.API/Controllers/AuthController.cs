@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using HelpDesk.Application.Services;
+﻿using HelpDesk.Application.Services;
+using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.API.Controllers;
 
@@ -15,13 +16,20 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] dynamic request)
+    public IActionResult Login([FromBody] LoginRequest request)
     {
-        string username = request.username;
+        if (request == null || string.IsNullOrWhiteSpace(request.Email))
+        {
+            return BadRequest(new { message = "E-mail é obrigatório." });
+        }
 
-        // Simulação (em produção validaria no banco)
-        var token = _authService.GenerateToken(username);
+        // ⚠️ Em produção: validar e-mail no banco / Identity
+        var token = _authService.GenerateToken(request.Email);
 
-        return Ok(new { token });
+        return Ok(new
+        {
+            token,
+            email = request.Email
+        });
     }
 }

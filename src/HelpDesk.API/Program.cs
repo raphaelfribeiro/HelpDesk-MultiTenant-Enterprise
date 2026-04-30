@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,6 +93,11 @@ builder.Services.AddSingleton<AuthService>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
     return new AuthService(config["Jwt:Key"], config["Jwt:Issuer"], config["Jwt:Audience"]);
+});
+
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
 
 var app = builder.Build();
