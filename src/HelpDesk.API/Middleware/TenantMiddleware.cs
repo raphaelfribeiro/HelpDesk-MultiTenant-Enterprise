@@ -13,7 +13,16 @@ public class TenantMiddleware
     {
         if (context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantId))
         {
-            context.Items["TenantId"] = tenantId;
+            if (Guid.TryParse(tenantId, out var tenantGuid))
+            {
+                context.Items["TenantId"] = tenantGuid;
+            }
+            else
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsync("Invalid X-Tenant-Id header format. Expected a GUID.");
+                return;
+            }
         }
 
         await _next(context);
