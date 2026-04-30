@@ -4,12 +4,14 @@ using HelpDesk.Domain.Repositories;
 using HelpDesk.Infrastructure.Data;
 using HelpDesk.Infrastructure.Queries;
 using HelpDesk.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
+using HelpDesk.Domain.Services;
+using HelpDesk.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration
-        .GetConnectionString("Default")));
+        .GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' was not found.")));
 
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
@@ -38,7 +40,7 @@ builder.Services.AddScoped<TicketAdoRepository>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
     return new TicketAdoRepository(
-        config.GetConnectionString("Default"));
+        config.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' was not found."));
 });
 
 // Swagger
@@ -64,7 +66,10 @@ builder.Services.AddSwaggerGen(options =>
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 
-var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
+var jwtKey = jwtSettings["Key"] ?? throw new InvalidOperationException("Jwt:Key is required.");
+var jwtIssuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer is required.");
+var jwtAudience = jwtSettings["Audience"] ?? throw new InvalidOperationException("Jwt:Audience is required.");
+var key = Encoding.ASCII.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -82,8 +87,8 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidateLifetime = true,
 
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
 
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
@@ -92,13 +97,30 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddSingleton<AuthService>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
-    return new AuthService(config["Jwt:Key"], config["Jwt:Issuer"], config["Jwt:Audience"]);
+    var jwtKeyConfig = config["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is required.");
+    var jwtIssuer = config["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer is required.");
+    var jwtAudience = config["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience is required.");
+
+    return new AuthService(jwtKeyConfig, jwtIssuer, jwtAudience);
+});
+
+builder.Services.AddSingleton<IAuditLogService>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var cosmosConnectionString = config["CosmosDb:ConnectionString"] ?? throw new InvalidOperationException("CosmosDb:ConnectionString is required.");
+    var cosmosDatabase = config["CosmosDb:Database"] ?? throw new InvalidOperationException("CosmosDb:Database is required.");
+    var cosmosContainer = config["CosmosDb:Container"] ?? throw new InvalidOperationException("CosmosDb:Container is required.");
+
+    return new CosmosDbService(cosmosConnectionString, cosmosDatabase, cosmosContainer);
 });
 
 builder.Services.Configure<JsonOptions>(options =>
 {
     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContext, UserContext>();
 
 var app = builder.Build();
 

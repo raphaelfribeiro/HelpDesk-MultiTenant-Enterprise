@@ -4,9 +4,9 @@ public class Ticket
 {
     public Guid Id { get; private set; }
 
-    public string Title { get; private set; }
+    public string Title { get; private set; } = null!;
 
-    public string Description { get; private set; }
+    public string Description { get; private set; } = null!;
 
     public Guid TenantId { get; private set; }
 

@@ -10,21 +10,19 @@ namespace HelpDesk.API.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class TicketsController : ControllerBase
+public class TicketsController(TicketService service) : ControllerBase
 {
-    private readonly TicketService _service;
-
-    public TicketsController(TicketService service)
-    {
-        _service = service;
-    }
+    private readonly TicketService _service = service;
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTicketDto dto)
     {
-        var tenantId = GetTenantId();
+        if (!TryGetTenantId(out var tenantId))
+        {
+            return BadRequest("X-Tenant-Id header is required and must be a valid GUID.");
+        }
+
         var id = await _service.CreateAsync(dto, tenantId);
-        
         return Ok(new { Id = id });
     }
 
@@ -45,20 +43,26 @@ public class TicketsController : ControllerBase
     [HttpGet("tenant")]
     public async Task<IActionResult> GetByTenant([FromServices] TicketAdoRepository repo)
     {
-        var tenantId = GetTenantId();
+        if (!TryGetTenantId(out var tenantId))
+        {
+            return BadRequest("X-Tenant-Id header is required and must be a valid GUID.");
+        }
 
         var result = await repo.GetByTenantAsync(tenantId);
-
         return Ok(result);
     }
 
-    private Guid GetTenantId()
+    private bool TryGetTenantId(out Guid tenantId)
     {
-        if (HttpContext.Items.TryGetValue("TenantId", out var tenantId))
+        tenantId = default;
+        var httpContext = HttpContext ?? throw new InvalidOperationException("HttpContext is not available.");
+
+        if (httpContext.Items.TryGetValue("TenantId", out var tenantIdObj) && tenantIdObj is Guid tenantGuid)
         {
-            return Guid.Parse(tenantId.ToString());
+            tenantId = tenantGuid;
+            return true;
         }
 
-        throw new Exception("TenantId not provided");
+        return false;
     }
 }

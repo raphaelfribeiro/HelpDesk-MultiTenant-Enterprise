@@ -1,24 +1,35 @@
-﻿using HelpDesk.Domain.Entities;
+﻿using HelpDesk.Application.DTOs;
+using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Repositories;
-using HelpDesk.Application.DTOs;
+using HelpDesk.Domain.Services;
+using System.Reflection.Metadata;
 
 namespace HelpDesk.Application.Services;
 
 public class TicketService
 {
     private readonly ITicketRepository _repository;
+    private readonly IAuditLogService _auditLogService;
+    private readonly IUserContext _userContext;
 
-    public TicketService(ITicketRepository repository)
+    public TicketService(ITicketRepository repository, IAuditLogService auditLogService, IUserContext userContext)
     {
         _repository = repository;
+        _auditLogService = auditLogService;
+        _userContext = userContext;
     }
 
     public async Task<Guid> CreateAsync(CreateTicketDto dto, Guid tenantId)
     {
-        var ticket = new Ticket(
-            dto.Title,
-            dto.Description,
-            tenantId);
+        var ticket = new Ticket(dto.Title, dto.Description, tenantId);
+
+        await _auditLogService.AddLogAsync(new AuditLog
+        {
+            EntityId = ticket.Id.ToString(),
+            Action = "CREATE_TICKET",
+            User = _userContext.GetUserEmail(),
+            Data = $"Ticket criado: {ticket.Id}"
+        });
 
         await _repository.AddAsync(ticket);
 

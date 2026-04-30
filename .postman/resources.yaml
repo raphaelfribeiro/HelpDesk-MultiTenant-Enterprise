@@ -1,0 +1,8 @@
+# Use this workspace to collaborate
+workspace:
+  id: 5263a25b-af97-494d-82f4-f335b7828535
+
+localResources:
+  specs:
+    - ..\src\HelpDesk.API\obj\Debug\net10.0\EndpointInfo\HelpDesk.API.json
+    - ..\src\HelpDesk.Legacy.API\obj\Debug\net10.0\EndpointInfo\HelpDesk.Legacy.API.json
