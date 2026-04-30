@@ -2,10 +2,12 @@
 using HelpDesk.Application.Services;
 using HelpDesk.Infrastructure.Queries;
 using HelpDesk.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TicketsController : ControllerBase
