@@ -1,11 +1,13 @@
 using HelpDesk.API.Middleware;
+using HelpDesk.Application.Interfaces;
 using HelpDesk.Application.Services;
 using HelpDesk.Domain.Repositories;
+using HelpDesk.Domain.Services;
 using HelpDesk.Infrastructure.Data;
 using HelpDesk.Infrastructure.Queries;
 using HelpDesk.Infrastructure.Repositories;
-using HelpDesk.Domain.Services;
 using HelpDesk.Infrastructure.Services;
+using HelpDesk.NotificationWorker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +44,8 @@ builder.Services.AddScoped<TicketAdoRepository>(sp =>
     return new TicketAdoRepository(
         config.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' was not found."));
 });
+
+builder.Services.AddScoped<IMessageBus, ServiceBusService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -114,6 +118,13 @@ builder.Services.AddSingleton<IAuditLogService>(sp =>
     return new CosmosDbService(cosmosConnectionString, cosmosDatabase, cosmosContainer);
 });
 
+builder.Services.AddSingleton<ServiceBusService>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    return new ServiceBusService(config);
+});
+
 builder.Services.Configure<JsonOptions>(options =>
 {
     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
@@ -121,6 +132,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
+builder.Services.AddHostedService<Worker>();
 
 var app = builder.Build();
 

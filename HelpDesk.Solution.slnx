@@ -5,5 +5,6 @@
     <Project Path="src/HelpDesk.Domain/HelpDesk.Domain.csproj" />
     <Project Path="src/HelpDesk.Infrastructure/HelpDesk.Infrastructure.csproj" />
     <Project Path="src/HelpDesk.Legacy.API/HelpDesk.Legacy.API.csproj" />
+    <Project Path="src/HelpDesk.NotificationWorker/HelpDesk.NotificationWorker.csproj" />
   </Folder>
 </Solution>
