@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\HelpDesk.Application\HelpDesk.Application.csproj" />
     <ProjectReference Include="..\HelpDesk.Infrastructure\HelpDesk.Infrastructure.csproj" />
-    <ProjectReference Include="..\HelpDesk.NotificationWorker\HelpDesk.NotificationWorker.csproj" />
   </ItemGroup>
 
 </Project>
