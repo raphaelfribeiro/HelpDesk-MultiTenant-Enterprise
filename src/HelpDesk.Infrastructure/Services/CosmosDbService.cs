@@ -13,19 +13,16 @@ public class CosmosDbService : IAuditLogService
         var client = new CosmosClient(connectionString);
         var database = client.CreateDatabaseIfNotExistsAsync(databaseName).GetAwaiter().GetResult();
 
-        _container = database.Database.CreateContainerIfNotExistsAsync(containerName, "/id").GetAwaiter().GetResult().Container;
+        _container = database.Database.CreateContainerIfNotExistsAsync(containerName, "/tenantId").GetAwaiter().GetResult().Container;
     }
 
     public async Task AddLogAsync(AuditLog log)
     {
-        if (string.IsNullOrWhiteSpace(log.id))
+        if (string.IsNullOrWhiteSpace(log.tenantId))
         {
-            log.id = Guid.NewGuid().ToString();
+            throw new Exception("tenantId é obrigatório para salvar no Cosmos DB");
         }
 
-        var json = JsonSerializer.Serialize(log);
-        Console.WriteLine(json);
-
-        await _container.CreateItemAsync(log, new PartitionKey(log.id));
+        await _container.CreateItemAsync(log, new PartitionKey(log.tenantId));
     }
 }

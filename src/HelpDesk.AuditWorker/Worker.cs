@@ -1,3 +1,5 @@
+using HelpDesk.AuditWorker.Models;
+using System.Text.Json;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
@@ -39,7 +41,7 @@ public class Worker : BackgroundService
         _container = await db.Database
             .CreateContainerIfNotExistsAsync(
                 _config["CosmosDb:Container"],
-                "/id");
+                "/tenantId");
 
         _processor.ProcessEventAsync += ProcessEvent;
         _processor.ProcessErrorAsync += ProcessError;
@@ -50,17 +52,21 @@ public class Worker : BackgroundService
     private async Task ProcessEvent(ProcessEventArgs args)
     {
         var data = Encoding.UTF8.GetString(args.Data.Body.ToArray());
+        var auditEvent = JsonSerializer.Deserialize<AuditEvent>(data);
 
         Console.WriteLine($"Evento recebido: {data}");
 
         var log = new
         {
             id = Guid.NewGuid().ToString(),
-            data,
+            eventType = auditEvent.Event,
+            ticketId = auditEvent.TicketId,
+            tenantId = auditEvent.TenantId,
+            timestamp = auditEvent.Timestamp,
             createdAt = DateTime.UtcNow
         };
 
-        await _container.CreateItemAsync(log);
+        await _container.CreateItemAsync(log, new PartitionKey(log.tenantId));
 
         await args.UpdateCheckpointAsync(args.CancellationToken);
     }

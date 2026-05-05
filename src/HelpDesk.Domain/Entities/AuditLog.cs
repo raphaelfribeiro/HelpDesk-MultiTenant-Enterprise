@@ -2,13 +2,12 @@
 
 public class AuditLog
 {
-    [JsonPropertyName("id")]
     public string id { get; set; } = Guid.NewGuid().ToString();
-
-    public string Entity { get; set; } = "Ticket";
-    public string EntityId { get; set; }
-    public string Action { get; set; }
-    public string User { get; set; }
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-    public object Data { get; set; }
+    public string tenantId { get; set; }
+    public string entity { get; set; } = "Ticket";
+    public string entityId { get; set; }
+    public string action { get; set; }
+    public string user { get; set; }
+    public DateTime timestamp { get; set; } = DateTime.UtcNow;
+    public object data { get; set; }
 }

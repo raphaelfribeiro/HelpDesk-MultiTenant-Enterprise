@@ -3,6 +3,7 @@ using HelpDesk.Application.Interfaces;
 using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Repositories;
 using HelpDesk.Domain.Services;
+using HelpDesk.Application.Models.Audit;
 
 namespace HelpDesk.Application.Services;
 
@@ -29,10 +30,15 @@ public class TicketService
 
         await _auditLogService.AddLogAsync(new AuditLog
         {
-            EntityId = ticket.Id.ToString(),
-            Action = "CREATE_TICKET",
-            User = _userContext.GetUserEmail(),
-            Data = $"Ticket criado: {ticket.Id}"
+            tenantId = tenantId.ToString(),
+            entityId = ticket.Id.ToString(),
+            action = "CREATE_TICKET",
+            user = _userContext.GetUserEmail(),
+            data = new TicketAuditData
+            {
+                title = $"Ticket criado: {ticket.Id}",
+                description = ticket.Description
+            }
         });
 
         await _bus.PublishAsync(new
