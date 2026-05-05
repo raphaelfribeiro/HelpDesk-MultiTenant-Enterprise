@@ -14,7 +14,7 @@ public class TicketApiService
 
     public async Task<List<TicketViewModel>> GetTicketsAsync()
     {
-        var response = await _http.GetFromJsonAsync<List<TicketViewModel>>("/api/tickets");
-        return response;
+        var response = await _http.GetFromJsonAsync<List<TicketViewModel>>("tickets");
+        return response ?? new List<TicketViewModel>();
     }
 }
