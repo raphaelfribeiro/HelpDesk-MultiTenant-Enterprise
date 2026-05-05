@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpdesk-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helpdesk-api
+  template:
+    metadata:
+      labels:
+        app: helpdesk-api
+    spec:
+      containers:
+        - name: helpdesk-api
+          image: helpdesk-api:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ASPNETCORE_URLS
+              value: "http://+:80"
