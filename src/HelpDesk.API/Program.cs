@@ -18,6 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllers();
 
+builder.Services.AddHealthChecks();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration
@@ -74,6 +76,8 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+builder.Services.AddHealthChecks();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 
@@ -159,5 +163,7 @@ app.UseAuthorization();
 app.UseMiddleware<TenantMiddleware>();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 app.Run();

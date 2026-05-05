@@ -15,11 +15,24 @@ spec:
       containers:
         - name: helpdesk-api
           image: helpdesk-api:1.0
-          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
-          env:
-            - name: ASPNETCORE_ENVIRONMENT
-              value: "Development"
-            - name: ASPNETCORE_URLS
-              value: "http://+:80"
+
+          envFrom:
+            - configMapRef: 
+              name: helpdesk-config
+
+          # 🔥 HEALTH CHECKS
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
