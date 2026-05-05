@@ -1,5 +1,5 @@
-﻿using HelpDesk.Application.Services;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using HelpDesk.API.Models;
+using HelpDesk.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.API.Controllers;

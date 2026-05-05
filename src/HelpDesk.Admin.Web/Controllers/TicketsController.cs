@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using HelpDesk.Admin.Web.Services;
+﻿using HelpDesk.Admin.Web.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Admin.Web.Controllers;
 
+[Authorize]
 public class TicketsController : Controller
 {
     private readonly TicketApiService _service;
