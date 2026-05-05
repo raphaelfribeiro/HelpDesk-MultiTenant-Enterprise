@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <File Path="docker-compose.yml" />
+    <Project Path="src/HelpDesk.Admin.Web/HelpDesk.Admin.Web.csproj" />
     <Project Path="src/HelpDesk.API/HelpDesk.API.csproj" />
     <Project Path="src/HelpDesk.Application/HelpDesk.Application.csproj" />
     <Project Path="src/HelpDesk.AuditWorker/HelpDesk.AuditWorker.csproj" />
