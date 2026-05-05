@@ -1,15 +1,18 @@
 using Azure.Messaging.ServiceBus;
+using System.Collections;
 
 namespace HelpDesk.NotificationWorker;
 
 public class Worker : BackgroundService
 {
     private readonly IConfiguration _config;
+    private readonly ILogger<Worker> _logger;
     private ServiceBusProcessor _processor;
 
-    public Worker(IConfiguration config)
+    public Worker(IConfiguration config, ILogger<Worker> logger)
     {
         _config = config;
+        _logger = logger;
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -17,11 +20,11 @@ public class Worker : BackgroundService
         var connectionString = _config["ServiceBus:ConnectionString"];
         var queueName = _config["ServiceBus:QueueName"];
 
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new InvalidOperationException("ServiceBus:ConnectionString não configurada.");
-
-        if (string.IsNullOrWhiteSpace(queueName))
-            throw new InvalidOperationException("ServiceBus:QueueName não configurada.");
+        if (string.IsNullOrWhiteSpace(connectionString) || string.IsNullOrWhiteSpace(queueName))
+        {
+            _logger.LogError("ServiceBus:ConnectionString ou QueueName não configurada. Worker será encerrado.");
+            return;
+        }
 
         var client = new ServiceBusClient(connectionString);
 
