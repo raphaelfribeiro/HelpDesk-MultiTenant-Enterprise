@@ -11,11 +11,13 @@ public class ServiceBusService : IMessageBus
     private readonly ServiceBusSender _sender;
     private readonly string _connectionString;
     private readonly string _queueName;
+    private readonly IConfiguration _config;
 
     public ServiceBusService(IConfiguration config)
     {
-        _connectionString = config["ServiceBus:ConnectionString"];
-        _queueName = config["ServiceBus:QueueName"];
+        _config = config;
+        _connectionString = _config["ServiceBus:ConnectionString"];
+        _queueName = _config["ServiceBus:QueueName"];
 
         var client = new ServiceBusClient(_connectionString);
         _sender = client.CreateSender(_queueName);

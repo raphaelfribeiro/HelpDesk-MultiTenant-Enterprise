@@ -12,13 +12,15 @@ public class TicketService
     private readonly IAuditLogService _auditLogService;
     private readonly IUserContext _userContext;
     private readonly IMessageBus _bus;
+    private readonly IEventHubService _eventHub;
 
-    public TicketService(ITicketRepository repository, IAuditLogService auditLogService, IUserContext userContext, IMessageBus bus)
+    public TicketService(ITicketRepository repository, IAuditLogService auditLogService, IUserContext userContext, IMessageBus bus, IEventHubService eventHub)
     {
         _repository = repository;
         _auditLogService = auditLogService;
         _userContext = userContext;
         _bus = bus;
+        _eventHub = eventHub;
     }
 
     public async Task<Guid> CreateAsync(CreateTicketDto dto, Guid tenantId)
@@ -39,6 +41,14 @@ public class TicketService
             TicketId = ticket.Id,
             TenantId = tenantId,
             Title = ticket.Title
+        });
+
+        await _eventHub.PublishAsync(new
+        {
+            Event = "AUDIT_TICKET_CREATED",
+            TicketId = ticket.Id,
+            TenantId = tenantId,
+            Timestamp = DateTime.UtcNow
         });
 
         await _repository.AddAsync(ticket);
