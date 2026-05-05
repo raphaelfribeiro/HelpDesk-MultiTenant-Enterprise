@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: helpdesk-sql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=StrongPassword123!
+    ports:
+      - "1433:1433"
+
+  api:
+    build:
+      context: .
+      dockerfile: HelpDesk.API/Dockerfile
+    container_name: helpdesk-api
+    depends_on:
+      - sqlserver
+    ports:
+      - "5000:80"
+    environment:
+      - ConnectionStrings__Default=Server=sqlserver;Database=HelpDeskDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=True
+
+  notification-worker:
+    build:
+      context: .
+      dockerfile: HelpDesk.NotificationWorker/Dockerfile
+    container_name: helpdesk-notification
+    depends_on:
+      - api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ServiceBus__ConnectionString=Endpoint=sb://helpdesk-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=***REMOVED***
+      - ServiceBus__QueueName=ticket-create
+  audit-worker:
+    build:
+      context: .
+      dockerfile: HelpDesk.AuditWorker/Dockerfile
+    container_name: helpdesk-audit
+    depends_on:
+      - api
