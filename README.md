@@ -28,12 +28,12 @@ The project includes **unit tests across all layers**, ensuring reliability and 
 
 ### 📁 Test Projects
 
-tests/
-├── HelpDesk.API.Tests
-├── HelpDesk.Application.Tests
-├── HelpDesk.Domain.Tests
-├── HelpDesk.Infrastructure.Tests
-├── HelpDesk.Admin.Web.Tests
+tests/ \
+├── HelpDesk.API.Tests \
+├── HelpDesk.Application.Tests \
+├── HelpDesk.Domain.Tests \
+├── HelpDesk.Infrastructure.Tests \
+├── HelpDesk.Admin.Web.Tests \
 ├── HelpDesk.Desktop.Tests
 
 ### ✔ Coverage
