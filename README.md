@@ -22,6 +22,30 @@ This project demonstrates a **multi-tenant SaaS system** designed with:
 
 ---
 
+## 🧪 Testing Strategy
+
+The project includes **unit tests across all layers**, ensuring reliability and maintainability.
+
+### 📁 Test Projects
+
+tests/
+├── HelpDesk.API.Tests
+├── HelpDesk.Application.Tests
+├── HelpDesk.Domain.Tests
+├── HelpDesk.Infrastructure.Tests
+├── HelpDesk.Admin.Web.Tests
+├── HelpDesk.Desktop.Tests
+
+### ✔ Coverage
+
+- Domain (business rules)
+- Application (use cases)
+- API (controllers/endpoints)
+- Infrastructure (mocked integrations)
+- UI logic (basic scenarios)
+
+---
+
 ## 🏗 Architecture
 
 ```

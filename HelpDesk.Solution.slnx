@@ -11,4 +11,12 @@
     <Project Path="src/HelpDesk.Legacy.API/HelpDesk.Legacy.API.csproj" />
     <Project Path="src/HelpDesk.NotificationWorker/HelpDesk.NotificationWorker.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HelpDesk.Admin.Web.Tests/HelpDesk.Admin.Web.Tests.csproj" />
+    <Project Path="tests/HelpDesk.API.Tests/HelpDesk.API.Tests.csproj" />
+    <Project Path="tests/HelpDesk.Application.Tests/HelpDesk.Application.Tests.csproj" />
+    <Project Path="tests/HelpDesk.Desktop.Tests/HelpDesk.Desktop.Tests.csproj" />
+    <Project Path="tests/HelpDesk.Domain.Tests/HelpDesk.Domain.Tests.csproj" />
+    <Project Path="tests/HelpDesk.Infrastructure.Tests/HelpDesk.Infrastructure.Tests.csproj" />
+  </Folder>
 </Solution>
