@@ -19,4 +19,8 @@
     <ProjectReference Include="..\HelpDesk.Infrastructure\HelpDesk.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="HelpDesk.API.Tests" />
+  </ItemGroup>
+
 </Project>
