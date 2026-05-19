@@ -270,3 +270,4 @@ secrets.json
 # SECURITY SCAN REPORTS
 ##############################################
 leaks.json
+leaks-*.json

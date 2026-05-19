@@ -1,0 +1,14 @@
+title = "HelpDesk Multi-Tenant Enterprise - gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Skip build outputs, IDE state, and gitleaks reports during --no-git scans"
+paths = [
+    '''(^|/)bin/''',
+    '''(^|/)obj/''',
+    '''(^|/)\.vs/''',
+    '''^leaks\.json$''',
+    '''^leaks-[^/]+\.json$''',
+]
