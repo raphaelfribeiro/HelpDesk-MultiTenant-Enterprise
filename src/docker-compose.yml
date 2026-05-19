@@ -7,7 +7,7 @@ services:
     container_name: helpdesk-sql
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=StrongPassword123!
+      - SA_PASSWORD=${SQL_SA_PASSWORD}
     ports:
       - "1433:1433"
 
@@ -21,7 +21,7 @@ services:
     ports:
       - "5000:80"
     environment:
-      - ConnectionStrings__Default=Server=sqlserver;Database=HelpDeskDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=True
+      - ConnectionStrings__Default=${DB_CONNECTION_STRING}
 
   notification-worker:
     build:
@@ -32,8 +32,9 @@ services:
       - api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ServiceBus__ConnectionString=Endpoint=sb://helpdesk-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=9NaR4QgYDRWX7KPcZ7mQJKIphHzPcx+Zs+ASbBdeOYA=
+      - ServiceBus__ConnectionString=${SERVICEBUS_CONNECTION_STRING}
       - ServiceBus__QueueName=ticket-create
+      
   audit-worker:
     build:
       context: .

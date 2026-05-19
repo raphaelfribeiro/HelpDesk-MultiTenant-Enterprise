@@ -1,3 +1,4 @@
+using Azure.Identity;
 using HelpDesk.API.Middleware;
 using HelpDesk.Application.Interfaces;
 using HelpDesk.Application.Services;
@@ -14,6 +15,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var keyVaultUri = builder.Configuration["KeyVault:Uri"];
+if (!string.IsNullOrWhiteSpace(keyVaultUri))
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential());
+}
 
 // Add services
 builder.Services.AddControllers();
