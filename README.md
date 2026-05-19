@@ -103,7 +103,59 @@ Workers → Cosmos DB (Audit)
 
 ---
 
+## 🔐 Configuration & Secrets
+
+No secrets are committed to this repository. Every project's `appsettings.json` ships with **empty placeholders** for sensitive values — they must be supplied at runtime via one of the layered providers below.
+
+### Configuration sources (order of precedence, last wins)
+
+1. `appsettings.json` — committed; safe defaults only (queue names, container names, etc.)
+2. `appsettings.{Environment}.json` — gitignored
+3. **dotnet user-secrets** — local development
+4. Environment variables — used by Docker Compose via `.env`
+5. **Azure Key Vault** — production; loaded only when `KeyVault:Uri` is set
+
+### Local development (user-secrets)
+
+Run the interactive helper from the repo root to populate user-secrets for the three runtime projects:
+
+```powershell
+pwsh ./scripts/setup-user-secrets.ps1
+```
+
+Inspect what is stored for a project:
+
+```powershell
+dotnet user-secrets list --project src/HelpDesk.API/HelpDesk.API.csproj
+```
+
+User-secrets live outside the repo under `%APPDATA%\Microsoft\UserSecrets\<UserSecretsId>\secrets.json` and are never committed.
+
+### Docker Compose
+
+Copy the env template and fill in the values:
+
+```bash
+cp src/.env.example src/.env
+```
+
+`src/.env` is gitignored. `docker-compose.yml` reads from it via `${VAR}` interpolation.
+
+### Production (Azure Key Vault)
+
+Set `KeyVault__Uri` (env var) or `KeyVault:Uri` (JSON) to your vault URI:
+
+```
+KeyVault__Uri=https://<your-vault>.vault.azure.net/
+```
+
+The hosts use `DefaultAzureCredential`, so on Azure they authenticate via Managed Identity; locally they fall back to your `az login` session. Key Vault secret names map to config paths with a double-dash separator (e.g. `ConnectionStrings--Default`, `Jwt--Key`).
+
+---
+
 ## 🐳 Run with Docker
+
+> Make sure `src/.env` exists first — see [Configuration & Secrets](#-configuration--secrets).
 
 ```bash
 docker-compose up --build
@@ -162,8 +214,10 @@ http://localhost:8080/swagger
 
 ## 🔐 Security
 
-- JWT Auth
+- JWT authentication
 - Tenant isolation
+- Layered secret management: `appsettings.json` → user-secrets → environment variables → Azure Key Vault
+- No secrets in version control (see [Configuration & Secrets](#-configuration--secrets))
 
 ---
 
