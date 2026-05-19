@@ -58,6 +58,8 @@ artifacts/
 *.iobj
 *.ipdb
 
+**/Properties/launchSettings.json
+
 ##############################################
 # RIDER
 ##############################################
@@ -90,6 +92,8 @@ yarn-error.log*
 
 appsettings.Development.json
 appsettings.Local.json
+appsettings.Production.json
+appsettings.*.local.json
 
 ##############################################
 # USER SECRETS
@@ -201,6 +205,7 @@ Desktop.ini
 *.pem
 *.key
 *.crt
+*.cer
 
 ##############################################
 # ENV FILES
@@ -208,6 +213,7 @@ Desktop.ini
 
 .env
 .env.*
+!.env.example
 
 ##############################################
 # CACHE
@@ -254,3 +260,13 @@ IISExpress/
 ##############################################
 
 *.lnk
+
+##############################################
+# USER SECRETS REFERENCE FILES
+##############################################
+secrets.json
+
+##############################################
+# SECURITY SCAN REPORTS
+##############################################
+leaks.json
